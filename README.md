@@ -12,6 +12,10 @@ For more, see: https://en.wikipedia.org/wiki/Aho%E2%80%93Corasick_algorithm
 How to use this library
 =======================
 
+- Hex Package link: https://hex.pm/packages/aho_corasick
+- Online Docs link: https://hexdocs.pm/aho_corasick/AhoCorasick.html
+
+
 ```elixir
 graph = AhoCorasick.new(["my", "dictionary", "terms"])
 
