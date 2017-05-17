@@ -67,6 +67,16 @@
       </h1>
 
       
+        <section id="moduledoc">
+          <p>Usage:</p>
+<pre><code class="elixir">graph = AhoCorasick.new([&quot;my&quot;, &quot;dictionary&quot;, &quot;terms&quot;])
+
+results = graph.search(&quot;I wonder if any of the terms from my dictionary appear in this text, and if so, where?&quot;)
+
+=&gt; #MapSet&lt;[{&quot;dictionary&quot;, 37, 10}, {&quot;my&quot;, 34, 2}, {&quot;terms&quot;, 23, 5}]&gt;</code></pre>
+
+        </section>
+      
 
       
         <section id="summary" class="details-list">
@@ -220,12 +230,14 @@ result values, but not failure edges)</p>
     <p>if you want to manually/dynamically add terms to the tree, this method must be called
 before you can <code class="inline">search</code> the graph for matches.</p>
 <p>Usage:</p>
-<p>g = AhoCorasick.new()
-AhoCorasick.add_term(g, “a term”)</p>
-<h1>must be called before calling search!</h1>
-<p>AhoCorasick.build_trie(g)</p>
-<h1>internal trie/graph is built. now you can search:</h1>
-<p>AhoCorasick.search(g, input_text)</p>
+<pre><code class="elixir">g = AhoCorasick.new()
+AhoCorasick.add_term(g, &quot;a term&quot;)
+
+# must be called before calling search!
+AhoCorasick.build_trie(g)
+
+# internal trie/graph is built. now you can search:
+AhoCorasick.search(g, input_text)</code></pre>
 
   </section>
 </div>

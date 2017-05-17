@@ -1,5 +1,15 @@
 defmodule AhoCorasick do
-  import Debug
+  @moduledoc """
+  Usage:
+
+  ```elixir
+  graph = AhoCorasick.new(["my", "dictionary", "terms"])
+
+  results = graph.search("I wonder if any of the terms from my dictionary appear in this text, and if so, where?")
+
+  => #MapSet<[{"dictionary", 37, 10}, {"my", 34, 2}, {"terms", 23, 5}]>
+  ```
+  """
 
   defstruct graph: nil
 
@@ -53,6 +63,7 @@ defmodule AhoCorasick do
 
   Usage:
 
+  ```elixir
   g = AhoCorasick.new()
   AhoCorasick.add_term(g, "a term")
 
@@ -61,6 +72,7 @@ defmodule AhoCorasick do
 
   # internal trie/graph is built. now you can search:
   AhoCorasick.search(g, input_text)
+  ```
   """
   def build_trie(ac, queue \\ [:root])
 
