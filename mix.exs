@@ -7,6 +7,7 @@ defmodule AhoCorasick.Mixfile do
      elixir: "~> 1.0",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
+     package: package(),
      deps: deps()]
   end
 
@@ -28,5 +29,14 @@ defmodule AhoCorasick.Mixfile do
   # Type `mix help deps` for more examples and options
   defp deps do
     []
+  end
+
+  def package do
+    [ name: :aho_corasick,
+      files: ["lib", "mix.exs"],
+      maintainers: ["Jeff Gran"],
+      licenses: ["MIT"],
+      links: %{"Github" => "https://github.com/jeffgran/aho_corasick.ex"}
+    ]
   end
 end

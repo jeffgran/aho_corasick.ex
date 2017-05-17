@@ -685,4 +685,17 @@ defmodule AhoCorasickTest do
     ])
   end
 
+  test "readme example" do
+
+    graph = AhoCorasick.new(["my", "dictionary", "terms"])
+
+    results = AhoCorasick.search(graph, "I wonder if any of the terms from my dictionary appear in this text, and if so, where?")
+
+    assert results == MapSet.new([
+      {"dictionary", 37, 10},
+      {"my", 34, 2},
+      {"terms", 23, 5}
+    ])
+  end
+
 end
