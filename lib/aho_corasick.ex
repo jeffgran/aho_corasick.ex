@@ -177,26 +177,30 @@ defmodule AhoCorasick do
     end)
   end
 
-  # defp goto(ac, node, [target_token|rest]) do
-  #   #results = result(ac, node, results)
+  defp goto(ac, node, i, [target_token|rest], results) do
+    new_results = results(ac, node)
+    results = new_results ++ results
 
-  #   edges = :digraph.out_edges(ac.graph, node)
-  #   case Enum.find(edges, fn(e) -> edge_matches(ac, e, target_token) end) do
-  #     nil ->
-  #       if node == :root do
-  #         goto(ac, :root, rest)
-  #       else
-  #         fail(ac, node, [target_token|rest])
-  #       end
-  #     edge ->
-  #       {_edge, _v1, v2, _label} = :digraph.edge(ac.graph, edge)
-  #       goto(ac, v2, rest)
-  #   end
-  # end
+    debug i
+    debug node
 
-  # defp goto(ac, node, []) do
-  #   results
-  # end
+    edges = :digraph.out_edges(ac.graph, node)
+    case Enum.find(edges, fn(e) -> edge_matches(ac, e, target_token) end) do
+      nil ->
+        if node == :root do
+          goto(ac, :root, i + 1, rest, results)
+        else
+          goto(ac, failure_node_from_node(ac, node), i, [target_token|rest], results)
+        end
+      edge ->
+        {_edge, _v1, v2, _label} = :digraph.edge(ac.graph, edge)
+        goto(ac, v2, i + 1, rest, results)
+    end
+  end
+
+  defp goto(ac, node, i, [], results) do
+    results
+  end
 
   # defp result(ac, node, results) do
   #   # TODO. if the node has a result label, return (results + newresult)
@@ -204,8 +208,7 @@ defmodule AhoCorasick do
 
   def search(ac, input) do
     input_tokens = tokenize(input)
-    #results = goto(ac, :root, input_tokens, [])
-    #results
+    goto(ac, :root, 0, input_tokens, [])
   end
 
   def num_nodes(ac) do
@@ -213,7 +216,7 @@ defmodule AhoCorasick do
   end
 
   def print(ac) do
-    :digraph.vertex(ac.graph, :root)
+    #:digraph.vertex(ac.graph, :root)
     print(ac, :root, 0)
   end
 
@@ -261,8 +264,12 @@ defmodule AhoCorasick do
   end
 
   defp edge_matches(ac, edge, token) do
-    {_, _, _, {:token, label}} = :digraph.edge(ac.graph, edge)
-    label == token
+    case :digraph.edge(ac.graph, edge) do
+      {_, _, _, {:token, label}} ->
+        label == token
+      _else ->
+        false
+    end
   end
 
 end

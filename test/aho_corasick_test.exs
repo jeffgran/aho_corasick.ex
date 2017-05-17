@@ -33,7 +33,7 @@ defmodule AhoCorasickTest do
   test "term with a strict suffix term should have both in the label of the terminating node" do
     ag = AhoCorasick.new(["he", "she", "his", "hers"])
 
-    AhoCorasick.print(ag)
+    #AhoCorasick.print(ag)
 
     she_node = ag |> AhoCorasick.node_at_path(["s", "h", "e"])
 
@@ -45,7 +45,7 @@ defmodule AhoCorasickTest do
   test "wikipedia example" do
     ag = AhoCorasick.new(["a", "ab", "bab", "bc", "bca", "c", "ca", "caa"])
 
-    AhoCorasick.print(ag)
+    #AhoCorasick.print(ag)
 
     bca_node = ag |> AhoCorasick.node_at_path(["b", "c", "a"])
 
@@ -54,5 +54,29 @@ defmodule AhoCorasickTest do
     # this node has three temrs in its label because they are strict suffixes of one another
     assert bca_node_label == ["bca", "ca", "a"]
   end
+
+  test "searching with input text should yeild proper results" do
+
+    ag = AhoCorasick.new(["he", "she", "his", "hers", "us"])
+
+    results = AhoCorasick.search(ag, "what he said")
+
+    assert results == [
+      {"he", 5, 6}
+    ]
+
+  end
+
+  # test "searching with input text" do
+
+  #   ag = AhoCorasick.new(["he", "she", "his", "hers", "us"])
+
+  #   results = AhoCorasick.search(ag, "my ushers")
+
+  #   assert results == [
+  #     {"he", 5, 7}
+  #   ]
+
+  # end
 
 end
