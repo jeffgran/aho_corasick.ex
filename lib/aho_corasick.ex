@@ -5,7 +5,7 @@ defmodule AhoCorasick do
 
   def new(terms) do
     g = :digraph.new()
-    :digraph.add_vertex(g, :root, :root)
+    :digraph.add_vertex(g, :root)
     ac = %AhoCorasick{graph: g}
     Enum.each terms, &add_term(ac, &1)
     build_trie(ac)
@@ -14,7 +14,7 @@ defmodule AhoCorasick do
 
   def add_term(ac, term) do
     terminus = add_tokens(ac, tokenize(term))
-    :digraph.add_vertex(ac.graph, terminus, term)
+    :digraph.add_vertex(ac.graph, terminus, [term])
     ac
   end
 
@@ -55,6 +55,22 @@ defmodule AhoCorasick do
     v
   end
 
+  def node_at_path(ac, tokens, node \\ :root)
+
+  def node_at_path(ac, [token|rest], node) do
+    edge = token_edge_from_node(ac, node, token)
+    if edge do
+      {_e, _v1, v2, _label} = :digraph.edge(ac.graph, edge)
+      node_at_path(ac, rest, v2)
+    else
+      nil
+    end
+  end
+
+  def node_at_path(ac, [], node) do
+    :digraph.vertex(ac.graph, node)
+  end
+
 
   def build_trie(ac, queue \\ [:root])
 
@@ -63,14 +79,22 @@ defmodule AhoCorasick do
   end
 
   def build_trie(ac, [node|tail]) do
-    next_edges = token_edges_from_node(ac, node) # NotImplemented
+    next_edges = token_edges_from_node(ac, node)
     next_nodes = Enum.map next_edges, fn(e) ->
       {_edge, _v1, v2, {:token, token}} = :digraph.edge(ac.graph, e)
-      if node == :root do
+      fail_node = if node == :root do
         set_failure_for(ac, v2, :root)
+        :root
       else
-        fail_node = compute_failure_for(ac, node, token)
-        set_failure_for(ac, v2, fail_node)
+        f_n = failure_node_from_node(ac, node)
+        f_n2 = compute_failure_for(ac, f_n, token)
+        set_failure_for(ac, v2, f_n2)
+        f_n2
+      end
+      if v2 == fail_node do
+        ac.graph |> :digraph.add_vertex(v2, results(ac, v2))
+      else
+        ac.graph |> :digraph.add_vertex(v2, results(ac, v2) ++ results(ac, fail_node))
       end
       v2
     end
@@ -96,10 +120,14 @@ defmodule AhoCorasick do
     end
   end
 
+  def failure_node_from_node(ac, :root) do
+    :root
+  end
+
   def failure_node_from_node(ac, node) do
-    Enum.find :digraph.out_edges(ac.graph, node), fn(e) ->
-      case e do
-        {_edge, _v1, v2, :failure} -> true
+    edge = Enum.find_value :digraph.out_edges(ac.graph, node), fn(e) ->
+      case :digraph.edge(ac.graph, e) do
+        {_edge, _v1, v2, :failure} -> v2
         _not_a_failure_edge -> false
       end
     end
@@ -178,7 +206,16 @@ defmodule AhoCorasick do
 
   def print(ac, node, level) do
     if level == 0 do IO.write("\n") end
-    IO.write("+ #{label ac, node}\n")
+    label_as_string = ac
+    |> results(node)
+    |> Enum.join(",")
+
+    if label_as_string |> String.length > 0 do
+      label_as_string = "{#{label_as_string}}"
+    end
+
+    IO.write("+ #{label_as_string}\n")
+
     Enum.each :digraph.out_edges(ac.graph, node), fn(e) ->
       case :digraph.edge(ac.graph, e) do
         {_e, _v1, v2, {:token, token}} ->
@@ -189,8 +226,9 @@ defmodule AhoCorasick do
     end
   end
 
-  def label(ac, node) do
+  def results(ac, node) do
     {_vertex, label} = :digraph.vertex(ac.graph, node)
+    #debug label
     label
   end
 
