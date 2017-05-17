@@ -5,6 +5,7 @@ defmodule AhoCorasick.Mixfile do
     [app: :aho_corasick,
      version: "0.0.1",
      elixir: "~> 1.0",
+     description: "Aho-Corasick algorithm, implemented in Elixir using Erlang's :digraph for the graph structure",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      package: package(),
