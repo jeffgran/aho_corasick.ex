@@ -39,15 +39,20 @@ defmodule AhoCorasickTest do
 
     she_node_label = elem(she_node, 1)
 
-    assert she_node_label == ["he", "she"]
+    assert she_node_label == ["she", "he"]
   end
 
   test "wikipedia example" do
-    ag = AhoCorasick.new(["a", "ab", "bab", "bc", "bca", "c", "caa"])
+    ag = AhoCorasick.new(["a", "ab", "bab", "bc", "bca", "c", "ca", "caa"])
 
-    #AhoCorasick.print(ag)
+    AhoCorasick.print(ag)
 
-    # TODO search against "abccab"
+    bca_node = ag |> AhoCorasick.node_at_path(["b", "c", "a"])
+
+    bca_node_label = elem(bca_node, 1)
+
+    # this node has three temrs in its label because they are strict suffixes of one another
+    assert bca_node_label == ["bca", "ca", "a"]
   end
 
 end

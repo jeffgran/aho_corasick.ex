@@ -87,10 +87,17 @@ defmodule AhoCorasick do
         :root
       else
         f_n = failure_node_from_node(ac, node)
-        f_n2 = compute_failure_for(ac, f_n, token)
-        set_failure_for(ac, v2, f_n2)
-        f_n2
+        f_n = compute_failure_for(ac, f_n, token)
+        set_failure_for(ac, v2, f_n)
+        f_n
       end
+
+      # debug "v2:"
+      # debug v2
+
+      # debug "fail_node"
+      # debug fail_node
+
       if v2 == fail_node do
         ac.graph |> :digraph.add_vertex(v2, results(ac, v2))
       else
@@ -106,7 +113,13 @@ defmodule AhoCorasick do
   end
 
   def compute_failure_for(ac, :root, token) do
-    :root
+    case token_edge_from_node(ac, :root, token) do
+      nil ->
+        :root
+      e ->
+        {_edge, _v1, v2, _token_label} = ac.graph |> :digraph.edge(e)
+        v2
+    end
   end
 
   def compute_failure_for(ac, node, token) do
