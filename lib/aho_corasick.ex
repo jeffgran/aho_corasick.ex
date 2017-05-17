@@ -92,12 +92,6 @@ defmodule AhoCorasick do
         f_n
       end
 
-      # debug "v2:"
-      # debug v2
-
-      # debug "fail_node"
-      # debug fail_node
-
       if v2 == fail_node do
         ac.graph |> :digraph.add_vertex(v2, results(ac, v2))
       else
@@ -178,11 +172,19 @@ defmodule AhoCorasick do
   end
 
   defp goto(ac, node, i, [target_token|rest], results) do
-    new_results = results(ac, node)
-    results = new_results ++ results
+    new_results =
+      results(ac, node)
+    |> Enum.map fn(term) ->
+      len = String.length(term)
+      {term, i - len, len}
+    end
 
-    debug i
-    debug node
+    results = MapSet.union(results, MapSet.new(new_results))
+    #debug results
+    #results = new_results ++ results
+
+    # debug i
+    # debug node
 
     edges = :digraph.out_edges(ac.graph, node)
     case Enum.find(edges, fn(e) -> edge_matches(ac, e, target_token) end) do
@@ -208,7 +210,7 @@ defmodule AhoCorasick do
 
   def search(ac, input) do
     input_tokens = tokenize(input)
-    goto(ac, :root, 0, input_tokens, [])
+    goto(ac, :root, 0, input_tokens, MapSet.new())
   end
 
   def num_nodes(ac) do
