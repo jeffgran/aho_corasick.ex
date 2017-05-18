@@ -19,7 +19,7 @@ How to use this library
 ```elixir
 graph = AhoCorasick.new(["my", "dictionary", "terms"])
 
-results = graph.search("I wonder if any of the terms from my dictionary appear in this text, and if so, where?")
+results = AhoCorasick.search(graph, "I wonder if any of the terms from my dictionary appear in this text, and if so, where?")
 
 => #MapSet<[{"dictionary", 37, 10}, {"my", 34, 2}, {"terms", 23, 5}]>
 ```
