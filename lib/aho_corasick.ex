@@ -189,7 +189,7 @@ defmodule AhoCorasick do
         last_node
       edge ->
         {_, _, v2, _} = :digraph.edge(ac.graph, edge)
-        last_node = add_tokens(ac, rest, v2)
+        add_tokens(ac, rest, v2)
     end
   end
 
